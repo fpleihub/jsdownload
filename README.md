@@ -1,6 +1,8 @@
 # jsdownload
 原生js多文件批量下载器，效果预览图将demo.png
 
+<img src='https://raw.githubusercontent.com/lambertlei/jsdownload/main/demo.png'/>
+
 <br/>
 下载器参照download.js写了文件保存部分，下载文件部分使用“XMLHttpRequest”实现
 
