@@ -1,0 +1,68 @@
+<html>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<script type="application/javascript" src="http://apps.bdimg.com/libs/jquery/2.1.1/jquery.min.js"></script>
+<script type="application/javascript" src="Downer.js"></script>
+<body>
+<div style="width: 1024px;margin-bottom: 10px;">
+    以下测试文件来源于网络<br/>
+    <input type="text" id="input_0" placeholder="下载地址" value="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fwww.ibike.com.hk%2F01_bike_report%2F18%2Fmv%2Frvs%2Ffolderimage.jpg" style="width: 100%;"/><br>
+    <input type="text" id="input_5" placeholder="下载地址" value="https://img2.baidu.com/it/u=2582609683,1060568630&fm=253&fmt=auto&app=138&f=JPEG?w=500&h=342" style="width: 100%;"/><br>
+    <input type="text" id="input_1" placeholder="下载地址" value="https://gitee.com/knowledgeispower/download-test/raw/master/PIXBOT.zip" style="width: 100%;"/><br>
+    <input type="text" id="input_2" placeholder="下载地址" value="https://gitee.com/mydengshuai/file-download/raw/master/files/实验一.pptx" style="width: 100%;"/><br>
+    <input type="text" id="input_3" placeholder="下载地址" value="https://gitee.com/mydengshuai/file-download/raw/master/files/123.docx" style="width: 100%;"/><br>
+    <input type="text" id="input_4" placeholder="下载地址" value="https://dl.espressif.com/dl/audio/ff-16b-2c-44100hz.mp4" style="width: 100%;"/><br>
+</div>
+<button id="btn-start-down">开始下载</button>
+<button id="btn_cancel">取消所有下载</button>
+<div id="div-progress" style="width: 1024px;height: 600px;border:1px solid lightsteelblue;">
+
+</div>
+
+<script>
+    $("#btn-start-down").click(function(){
+        testDowner();
+    });
+    $("#btn_cancel").click(function(){
+        Downer.clearAllTask()
+    });
+
+    function testDowner() {
+        var urls=[];
+        $("input").each(function(){
+            var value = $(this).val();
+            urls.push(value)
+        });
+        $("#div-progress").empty();
+        for (var i = 0; i < urls.length; i++) {
+            var downItem='<div id="down-item-'+i+'" style="margin-top: 2px;">';//div
+            downItem+='<span id="down-item-p-'+i+'" style="width: 90%"></span>';
+            downItem+='<progress id="down-item-progress-'+i+'" value="0" max="100" style="width: 89%;"></progress>';
+            downItem+='<label id="down-item-lable-'+i+'">等待下载</label>';
+            downItem+='<input type="button" value="取消" onclick="cancelOne('+i+')"/>';
+            downItem+='</div>';
+            $("#div-progress").append(downItem);
+            Downer.pushTask(i,"down-item-"+i, urls[i], function (index,taskId,status, message, data) {
+                console.log("taskId=" + taskId + " status=" + status + " message=" + message);
+                var _progress = $("#down-item-progress-"+index);
+                var _info = $("#down-item-p-"+index);
+                if (status === -1) {
+                    _info.text("url=" + data.url + ",下载失败:" + message);
+                    return
+                }
+                if (data) {
+                    console.log(data);
+                    if (data.url) {
+                        _info.text("url=" + data.url + ",文件大小:" + (data.totalSize / 1024).toFixed(2) + "KB");
+                    }
+                    _progress.val(data.progressing.toFixed(2));
+                    $("#down-item-lable-"+index).text(data.progressing.toFixed(2)+"%");
+                }
+            })
+        }
+    }
+    function cancelOne(index) {
+        Downer.removeTask("down-item-"+index)
+    }
+</script>
+</body>
+</html>
